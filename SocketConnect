@@ -1,0 +1,103 @@
+// Hello GAP..
+//Folder เดืยวกับ file ต้องมี folder com ของ Socket บรรจุอยู่ด้วยกันเด้อ
+
+//import SOCKET Script///////////////////////////////////////////////////////////////////////////
+import com.worlize.websocket.*;
+import com.worlize.websocket.WebSocket;
+import com.worlize.websocket.WebSocketErrorEvent;
+import com.worlize.websocket.WebSocketEvent;
+import com.worlize.websocket.WebSocketMessage;
+// Socket Variables Part ///////////////////////////////////////////////////////////////////////
+var SocketURL_Connect: WebSocket;
+
+var SocketLink: String;
+
+var SocketMesage: String;
+var SocketRecieveForSplit: String; // เก็บช้อความไว้ให้ Function SocketSplit
+var SplitMessageAlready: Array;   //เก็บข้อความหลัง Split
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function SocketConnect(){
+	SocketURL_Connect 	= new WebSocket(SocketLink, null, null);
+	SocketURL_Connect.addEventListener(WebSocketEvent.CLOSED, handleWebSocketClosed); //เมื่อ Socket ถูกปิด
+	SocketURL_Connect.addEventListener(WebSocketEvent.OPEN, handleWebSocketOpen); //เมื่อ Socket ถูกเปิด
+	SocketURL_Connect.addEventListener(WebSocketEvent.MESSAGE, handleWebSocketMessage); //เมื่อมีการส่งข้อความ
+	SocketURL_Connect.addEventListener(WebSocketErrorEvent.CONNECTION_FAIL, handleConnectionFail);
+	SocketURL_Connect.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+	SocketURL_Connect.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSecurityError);
+	SocketURL_Connect.connect();
+	FORM_SOCKET.SocketStatusAlert.gotoAndStop(2);
+}
+function handleWebSocketOpen(event: WebSocketEvent) {
+	trace('');
+	trace('> SOCKET STATUS');
+	//trace('  > SOCKET Say : Connecting : '+SocketLink);
+	trace('  > SOCKET Say : Socket Connected'+SocketLink);
+	SocketError.gotoAndStop(1);
+	SocketURL_Connect.sendUTF(SocketMesage); // Test ส่ง Message ครั้งแรก
+}
+
+var myTimeoutSocket
+function handleWebSocketClosed(event: WebSocketEvent) {
+	trace('');
+	trace('> SOCKET STATUS');
+	//trace('  > SOCKET Say : Connecting : '+SocketLink);
+	trace('  > SOCKET Say : Socket Closed');
+	SocketError.gotoAndStop(5);//ภาพทับหน้าจอใหญ่
+	FORM_SOCKET.SocketStatusAlert.gotoAndStop(1);//แสดงผลลูกกลมสีแจ้ง Socket [TEST]
+	myTimeoutSocket = setTimeout(SocketConnect, 10000);
+}
+
+function handleConnectionFail(event: WebSocketErrorEvent) {
+	trace('');
+	trace('> SOCKET STATUS');
+	//trace('  > SOCKET Say : Connecting : '+SocketLink);
+	trace("  > SOCKET Say : Socket_INS Connection Failure: " + event.text);
+	SocketError.gotoAndStop(5);//ภาพทับหน้าจอใหญ่
+	FORM_SOCKET.SocketStatusAlert.gotoAndStop(5);
+}
+
+function handleIOError(event: IOErrorEvent){
+	trace('');
+	trace('> SOCKET STATUS');
+	//trace('  > SOCKET Say : Connecting : '+SocketLink);
+	trace("  > SOCKET Say : Can not Connect Socket Server");
+}
+
+function handleSecurityError(event: SecurityErrorEvent){
+	trace('');
+	trace('> SOCKET STATUS');
+	//trace('  > SOCKET Say : Connecting : '+SocketLink);
+	trace("  > SOCKET Say : Socker Security error");
+}
+
+var SocketMessageArray: Array  = new Array(); //เก็บ Messageจาก Socket ลง  Array
+var CountArrayInTrigger:Number = 0; //ไว้นับจำนวน Array ที่ Client นี้รับจาก Trigger
+
+function handleWebSocketMessage(event: WebSocketEvent) {
+	if (event.message.type === WebSocketMessage.TYPE_UTF8) {
+		FORM_SOCKET.SocketMessageGlobal.text = event.message.utf8Data; // Message ที่ได้รับจาก Socket
+		
+		SocketMessageArray.push(FORM_SOCKET.SocketMessageGlobal.text);
+		//trace(SocketMessageArray);
+		//trace(SocketMessageArray.length);
+		LengthOfMessageArray.text = String(SocketMessageArray.length);
+		
+		CheckSocketSplit(); //สั่งให้ Split Message ที่มาจาก Socket
+		
+		//นับจำนวน Socket ที่ส่งมาผ่าน Trigger//////////////////////////////////////
+		CountArrayInTrigger++;
+		AllArrayRecieve.text  = String(CountArrayInTrigger);
+		//////////////////////////////////////////////////////////////////
+		
+	} else if (event.message.type === WebSocketMessage.TYPE_BINARY) {
+		//trace("Got binary message of length " + event.message.binaryData.length);
+	}
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+function CloseSocket() {
+	SocketURL_Connect.close();
+	FORM_SOCKET.SocketStatusAlert.gotoAndStop(1);
+}
+////////////////////////////////////////////
+
