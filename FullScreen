@@ -1,3 +1,0 @@
-var window = stage.nativeWindow;
-window.alwaysInFront = true; // ให้ Windowsอยู่ข้างหน้าตลอด
-this.stage.nativeWindow.maximize(); //เปิดระบบ AUTO FULL SCREEN
