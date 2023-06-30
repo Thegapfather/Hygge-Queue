@@ -4,12 +4,19 @@
 Function in hygge medical service system :)
 
 
-## Acknowledgements
+## Link
  - [Hygge Website](https://hyggemedicalservice.com/new/)
  - [Facebook](https://www.facebook.com/hyggemedicalservice/)
  - [VIRTUALHOS](https://www.virtualhos.net/)
 
 
-## Authors
+## Hygge Developer Team
+
 - [Kiiti Limsongtham](https://linktr.ee/thegapfather)
+- Vasinee Pudchakarn
+- Teerawat Jordee
+- Tongchai Techapol
+- Thitikun Kaewpoom
+- Ketsiree Neamhom
+- Supreeya Lerdparn
 
